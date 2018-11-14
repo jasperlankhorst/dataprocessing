@@ -6,6 +6,7 @@ This script analyzes and visualizes some data.
 """
 
 import csv
+import json
 import math
 import matplotlib.pyplot as plt
 import numpy as np
@@ -19,13 +20,16 @@ from requests.exceptions import RequestException
 
 INPUT_CSV = "input.csv"
 OUTPUT_CSV = "output.csv"
+OUT_JSON = "data_week_2.json"
+
 
 def isolate_digit(some_string):
     """
     Takes a float or int from a string and isolates it, cutting off all text
-    and replacing commas with dots. If no digits found, output is 0.
+    and replacing commas with dots. If no digits found, output is 'None'.
     """
 
+    # Filter text and replace comma with dots
     is_float = False
     output = ""
     for i in some_string:
@@ -35,8 +39,9 @@ def isolate_digit(some_string):
             output += '.'
             is_float = True
 
+    # Return float or int
     if len(output) == 0:
-        return 0
+        return None
     if is_float == True:
         return float(output)
     if is_float == False:
@@ -67,8 +72,8 @@ def parsing_data():
                                        country[:(i)]).strip()
                 # Get other relevant variables
                 region = row[1].strip()
-                inf_mortality = isolate_digit(row[4])
-                pop_density = isolate_digit(row[7])
+                inf_mortality = isolate_digit(row[7])
+                pop_density = isolate_digit(row[4])
                 gdp = isolate_digit(row[8])
 
                 # Adding list to list
@@ -94,11 +99,29 @@ def save_csv(outfile, csv_countries):
 
 
 if __name__ == "__main__":
+
     parsing_data()
-    countries_frame = pd.read_csv(OUTPUT_CSV)
-    a = countries_frame['GDP ($ per capita)']
-    print(a[~((a - a.mean()).abs() > 3 * a.std())])
-    a = a[~((a - a.mean()).abs() > 3 * a.std())]
-    a.plot.hist(bins=100)
+
+    # Clean data up and calc mean, median and mode and plot histogram
+    countries_frame = pd.read_csv(OUTPUT_CSV, index_col="Country")
+    gdp = countries_frame['GDP ($ per capita)']
+    gdp = gdp[~((gdp - gdp.mean()).abs() > 3 * gdp.std())]
+    print(f"GDP Mean: {round(gdp.mean(), 1)}, Median: {gdp.median()}, Mode: {gdp.mode()}")
+    gdp.plot.hist(bins=100, title="GDP per country", )
     plt.show()
-    print(f"Standard deviation in GDP: {countries_frame['GDP ($ per capita)'].std()}")
+
+    # Clean data up and calc five points of infant mortality
+    inf = countries_frame['Infant Mortality']
+    inf = inf[~((inf - inf.mean()).abs() > 3 * inf.std())]
+    print(f"Infant mortality Minimum: {inf.min()}, Q1: {round(inf.quantile(0.25), 1)}, "
+          f"Median: {inf.quantile(0.5)}, Q3: {round(inf.quantile(0.75), 1)},"
+          f"Maximum: {inf.max()}")
+    # Boxplot
+    inf.plot.box()
+    plt.title("Infant Mortality per country")
+    plt.ylabel("Per 1000 births")
+    plt.show()
+    print(f"Standard deviation in GDP: {gdp.std()}")
+
+    # Turn to json file
+    countries_frame.to_json(path_or_buf=OUT_JSON)

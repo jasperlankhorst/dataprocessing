@@ -12,6 +12,7 @@ import numpy as np
 import pandas as pd
 from bs4 import BeautifulSoup
 from contextlib import closing
+from scipy import stats
 from requests import get
 from requests.exceptions import RequestException
 
@@ -95,5 +96,9 @@ def save_csv(outfile, csv_countries):
 if __name__ == "__main__":
     parsing_data()
     countries_frame = pd.read_csv(OUTPUT_CSV)
-
+    a = countries_frame['GDP ($ per capita)']
+    print(a[~((a - a.mean()).abs() > 3 * a.std())])
+    a = a[~((a - a.mean()).abs() > 3 * a.std())]
+    a.plot.hist(bins=100)
+    plt.show()
     print(f"Standard deviation in GDP: {countries_frame['GDP ($ per capita)'].std()}")

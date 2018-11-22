@@ -9,12 +9,15 @@ Makes a weather site
     <title>Jaspers site</title>
   </head>
   <body>
-    <h1>Maximum wind speed per day in Eelde, GN</h1>
-    <h2>Gemaakt door Jasper Lankhorst <br>
-      10885803
-    </h2>
+    <h1>Maximum wind speed per day in november 2018 in Eelde, GN</h1>
+    <p>Gemaakt door Jasper Lankhorst <br>
+      10885803 <br>
+      <a href="http://projects.knmi.nl/klimatologie/daggegevens/selectie.cgi">
+        Data source
+      </a><br>
+      Opdracht: JavaScript intro
+    </p>
     <canvas id="myCanvas" width=1000 height=1000></canvas>
-    <script>console.log("Hello world!");</script>
   <body>
 
   </body>
@@ -27,7 +30,6 @@ Makes a weather site
       if (txtFile.readyState === 4 && txtFile.status == 200) {
         var arr = JSON.parse(txtFile.responseText);
         makeCanvas(arr);
-
     };
 
   };
@@ -51,6 +53,7 @@ Makes a weather site
     var range_y = [50,550];
     ctx.fillStyle = 'rgb(200,200,200)';
     ctx.fillRect(10, 10, 1000, 1000);
+
     // Draw axes
     ctx.beginPath();
     ctx.moveTo(50,50);
@@ -61,34 +64,25 @@ Makes a weather site
 
     // Initialize plot line
     ctx.beginPath();
+
     // Move line to all next values
     array.forEach(function(element) {
       var x = Object.keys(element)[0];
       var y = element[x];
-      x = createTransform(domain_x, range_x)(x);
-      y = createTransform(domain_y, range_y)(y);
-      ctx.lineTo(x, y);
+      x_loc = createTransform(domain_x, range_x)(x);
+      y_loc = 550 - createTransform(domain_y, range_y)(y);
+      ctx.strokeText(x.substr(-2), x_loc-5, 570);
+      ctx.lineTo(x_loc, y_loc);
     });
     ctx.strokeStyle = '#ffffff';
     ctx.stroke();
 
     // Label axes
     ctx.font = "10px Arial";
-    ctx.strokeText("Wind speed (m/s)",20,45);
-    ctx.strokeText("Day of november 2018",600,600)
+    ctx.strokeText("Wind speed (m/s)",20,35);
+    ctx.strokeText("Day of november 2018",600,590)
 
-    // Draw ticks on x-axis
-    var i;
-    for (i=range_x[0]; i<range_x[1]; i+=50) {
-      ctx.beginPath();
-      ctx.moveTo(i,550);
-      ctx.lineTo(i,545);
-      ctx.strokeText()
-      ctx.strokeStyle = '#000000';
-      ctx.stroke();
-    };
-
-    // Same for y-axis
+    // Ticks and labels for y-axis
     var j;
     for (j=range_y[0]; j<range_y[1]; j+=50) {
       ctx.beginPath();
@@ -96,10 +90,9 @@ Makes a weather site
       ctx.lineTo(55,j);
       ctx.strokeStyle = '#000000';
       ctx.stroke();
+      ctx.strokeText((550-j)/5,30,j+5);
     };
-
   };
-
 
   function createTransform(domain, range){
 	// domain is a two-element array of the data bounds [domain_min, domain_max]

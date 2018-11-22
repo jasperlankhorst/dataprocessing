@@ -9,9 +9,117 @@ Makes a weather site
     <title>Jaspers site</title>
   </head>
   <body>
-    <canvas></canvas>
+    <h1>Maximum wind speed per day in Eelde, GN</h1>
+    <h2>Gemaakt door Jasper Lankhorst <br>
+      10885803
+    </h2>
+    <canvas id="myCanvas" width=1000 height=1000></canvas>
     <script>console.log("Hello world!");</script>
   <body>
 
   </body>
 </html>
+
+<script type="text/javascript">
+  var fileName = "data.json";
+  var txtFile = new XMLHttpRequest();
+  txtFile.onreadystatechange = function() {
+      if (txtFile.readyState === 4 && txtFile.status == 200) {
+        var arr = JSON.parse(txtFile.responseText);
+        makeCanvas(arr);
+
+    };
+
+  };
+  txtFile.open("GET", fileName);
+  txtFile.send();
+
+  function consoleLog(array) {
+    // Print each dict in an array
+    array.forEach(function(element) {
+      console.log(element);
+    });
+  };
+
+  function makeCanvas(array) {
+    // Create canvas and plots array
+    var canvas = document.getElementById('myCanvas');
+    var ctx = canvas.getContext('2d');
+    var domain_x = [20181101, 20181119];
+    var range_x = [50,750];
+    var domain_y = [0,100];
+    var range_y = [50,550];
+    ctx.fillStyle = 'rgb(200,200,200)';
+    ctx.fillRect(10, 10, 1000, 1000);
+    // Draw axes
+    ctx.beginPath();
+    ctx.moveTo(50,50);
+    ctx.lineTo(50,550);
+    ctx.lineTo(750,550);
+    ctx.strokeStyle = '#000000';
+    ctx.stroke();
+
+    // Initialize plot line
+    ctx.beginPath();
+    // Move line to all next values
+    array.forEach(function(element) {
+      var x = Object.keys(element)[0];
+      var y = element[x];
+      x = createTransform(domain_x, range_x)(x);
+      y = createTransform(domain_y, range_y)(y);
+      ctx.lineTo(x, y);
+    });
+    ctx.strokeStyle = '#ffffff';
+    ctx.stroke();
+
+    // Label axes
+    ctx.font = "10px Arial";
+    ctx.strokeText("Wind speed (m/s)",20,45);
+    ctx.strokeText("Day of november 2018",600,600)
+
+    // Draw ticks on x-axis
+    var i;
+    for (i=range_x[0]; i<range_x[1]; i+=50) {
+      ctx.beginPath();
+      ctx.moveTo(i,550);
+      ctx.lineTo(i,545);
+      ctx.strokeText()
+      ctx.strokeStyle = '#000000';
+      ctx.stroke();
+    };
+
+    // Same for y-axis
+    var j;
+    for (j=range_y[0]; j<range_y[1]; j+=50) {
+      ctx.beginPath();
+      ctx.moveTo(50,j);
+      ctx.lineTo(55,j);
+      ctx.strokeStyle = '#000000';
+      ctx.stroke();
+    };
+
+  };
+
+
+  function createTransform(domain, range){
+	// domain is a two-element array of the data bounds [domain_min, domain_max]
+	// range is a two-element array of the screen bounds [range_min, range_max]
+	// this gives you two equations to solve:
+	// range_min = alpha * domain_min + beta
+	// range_max = alpha * domain_max + beta
+
+    var domain_min = domain[0];
+    var domain_max = domain[1];
+    var range_min = range[0];
+    var range_max = range[1];
+
+    // formulas to calculate the alpha and the beta
+   	var alpha = (range_max - range_min) / (domain_max - domain_min);
+    var beta = range_max - alpha * domain_max;
+
+    // returns the function for the linear transformation (y= a * x + b)
+    return function(x){
+      return alpha * x + beta;
+    };
+  };
+</script>

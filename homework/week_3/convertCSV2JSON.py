@@ -9,7 +9,7 @@ from io import StringIO
 
 INPUT = "KNMI_20181119.txt"
 OUTPUT = "data.json"
-BILT = "260"
+EELDE = "280"
 
 def tojson(input_csv, output_json):
     """
@@ -20,7 +20,7 @@ def tojson(input_csv, output_json):
         list_of_measurements = []
         for line in f:
             # Search for De Bilt
-            if line[:5].strip() == BILT:
+            if line[:5].strip() == EELDE:
                 fields = list(map(lambda x: x.strip(), line.split(',')))
                 # Make list of dicts of date: wind speed
                 measurement = {fields[1]: int(fields[2])}

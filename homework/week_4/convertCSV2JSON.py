@@ -21,10 +21,12 @@ def tojson(input_csv, output_json):
         list_of_measurements = []
         reader = csv.DictReader(f)
         for line in reader:
+            fields = {}
             # Search for index
             if line["LOCATION"] == INDEX and line["MEASURE"] == MEASURE:
 
-                fields = {line["TIME"]: line["Value"]}
+                fields["year"] = line["TIME"]
+                fields["value"] = line["Value"]
                 # Make list of dicts of date: wind speed
                 list_of_measurements.append(fields)
     # Add to json

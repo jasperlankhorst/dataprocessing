@@ -21,42 +21,40 @@ Data processing week 4
       var w = 500
       var h = 500
       // Create SVG
+
       var svg = d3.select("body").append("svg");
       svg.attr("width", w)
          .attr("height", h);
-      d3.json("data.json").then(function(d){
+      d3.json("data.json").then(function(root){
         // Start reading JSON
-        console.log(d[0]);
-        d3.select("body").selectAll("p")
-          .data(root)
-          .enter()
-          .append("p")
-          .text(function(root) {
-            // Create bars
-            var rects = svg.selectAll("rect")
-                           .data(Object.keys(root))
-                           .enter()
-                           .append("rect")
-                           .attr("y", function(root) {
-                             var y = 1000-(root[Object.keys(root)]/10)
-                             return y
-                           })
-                           .attr("width", 10)
-                           .attr("height", function(root) {
-                             return root[Object.keys(root)]/10;
-                           })
-                           .attr("fill", "rgb(200,200," + function(root) {
-                             return Object.keys(root)/10;
-
-                           } + ")")
-                           .attr("transform", function(root,i) {
-                             var translate = [10 * i, 0];
-                             return "translate(" + translate + ")";
-                           });
+        // d3.select("body").selectAll("p")
+        //   .data(root)
+        //   .enter()
+        //   .append("p")
+        //   .text(function(root) {
+        // Create bars
+        var rects = svg.selectAll("rect")
+                       .data(root)
+                       .enter()
+                       .append("rect")
+                       .attr("y", function(root) {
+                         var y = 400-root["value"]/100
+                         console.log(y)
+                         return y
+                       })
+                       .attr("width", 10)
+                       .attr("height", function(root) {
+                         return root["value"];
+                       })
+                       .attr("fill", "rgb(200,200,200)")
+                       .attr("transform", function(root,i) {
+                         var translate = [11 * i, 0];
+                         return "translate(" + translate + ")";
+                       });
            });
-          });
-      d3.select("body").append("p").text("This is some information about"+
-        " my data set.");
+          // });
+      d3.select("body").append("p").text("My data set is about the energy use"
+        + "in Australia over the years since 1960.");
       d3.select("body").append("p").text("Jasper Lankhorst, 10885803")
     </script>
 

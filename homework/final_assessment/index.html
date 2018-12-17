@@ -2,7 +2,7 @@
 Jasper Lankhorst
 10885803
 index.html
-Data processing week 4
+Data processing final assessment
 -->
 
 <!DOCTYPE html>
@@ -16,9 +16,7 @@ Data processing week 4
   </head>
   <body>
     <script type="text/javascript">
-      var years_list = [];
-      var data_list = [];
-      var w = 500
+      var w = 1000
       var h = 500
       // Create SVG
 
@@ -26,37 +24,43 @@ Data processing week 4
       svg.attr("width", w)
          .attr("height", h);
       d3.json("data.json").then(function(root){
-        // Start reading JSON
-        // d3.select("body").selectAll("p")
-        //   .data(root)
-        //   .enter()
-        //   .append("p")
-        //   .text(function(root) {
         // Create bars
         var rects = svg.selectAll("rect")
                        .data(root)
                        .enter()
                        .append("rect")
                        .attr("y", function(root) {
-                         var y = 400-root["value"]/100
-                         console.log(y)
-                         return y
+                         if (root["value"] > 5.0) {
+                           var y = 400-root["value"]/100
+                           console.log(root["value"]/100)
+                           console.log(y)
+                           return y
+                         } else if (root["value"] != 0) {
+                           console.log("Niet: ", root["value"])
+                         }
                        })
                        .attr("width", 10)
                        .attr("height", function(root) {
-                         return root["value"];
+                         return root["value"]/100;
                        })
-                       .attr("fill", "rgb(200,200,200)")
+                       .attr("fill", "rgb(300,200,200)")
                        .attr("transform", function(root,i) {
                          var translate = [11 * i, 0];
                          return "translate(" + translate + ")";
                        });
+            // Create scale
+            var scale = d3.scaleLinear()
+                           .domain([d3.min(data), d3.max(data)])
+                           .range([0, width - 100]);
            });
-          // });
-      d3.select("body").append("p").text("My data set is about the energy use"
+
+      d3.select("body").append("p").text("My data set is about the energy use "
         + "in Australia over the years since 1960.");
       d3.select("body").append("p").text("Jasper Lankhorst, 10885803")
     </script>
+    <a href="https://stats.oecd.org/SDMX-JSON/data/MSTI_PUB/">
+      Click here for my data source
+    </a><br>
 
   </body>
 </html>

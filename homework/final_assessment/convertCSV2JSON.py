@@ -9,8 +9,7 @@ from io import StringIO
 
 INPUT = "data.csv"
 OUTPUT = "data.json"
-INDEX = "AUS"
-MEASURE = "KTOE"
+INDEX = "NLD"
 
 def tojson(input_csv, output_json):
     """
@@ -23,10 +22,11 @@ def tojson(input_csv, output_json):
         for line in reader:
             fields = {}
             # Search for index
-            if line["LOCATION"] == INDEX and line["MEASURE"] == MEASURE:
+            if line["LOCATION"] == INDEX:
 
                 fields["year"] = line["TIME"]
                 fields["value"] = line["Value"]
+                fields["measure"] = line["MEASURE"]
                 # Make list of dicts of date: wind speed
                 list_of_measurements.append(fields)
     # Add to json
